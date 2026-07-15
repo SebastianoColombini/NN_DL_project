@@ -1,0 +1,16 @@
+% !TEX root = ../main.tex
+
+\section{Concluding Remarks}
+\label{sec:conclusions}
+
+\subsection{Summary}
+We presented the iterative development of a deep-supervised, multi-decoder saliency network: from a literal, from-scratch replica trained with MSE (Beta), through a modernized optimizer/normalization and a KLD/CC/SIM deep-supervision loss (v1.0), a higher-resolution refinement with early stopping (v1.1), to a hybrid model with a pretrained Swin-Tiny Transformer encoder in place of the CNN one, decoder/fusion/loss held fixed (v2.0). Both v1.1 and v2.0 were evaluated cross-dataset on MIT1003.
+
+\subsection{Interpretation}
+The largest single improvement across the project came from the v1.0 loss and optimization change, not from added capacity: both later iterations, higher resolution (v1.1) and a pretrained Transformer encoder (v2.0), delivered only marginal gains, despite v2.0 being, on paper, the most significant upgrade. Two, non-exclusive, explanations for the Transformer's limited impact: (i) the conservative differential learning rate and near-total backbone freezing (\secref{subsec:transfer20}) may not allow enough task-specific adaptation; (ii) both runs were manually interrupted before their early-stopping budget (\secref{subsec:selection}), so the comparison may not yet reflect fully-trained performance. Either way, this is a useful negative finding: swapping in a higher-capacity pretrained encoder is not, by itself, sufficient, since loss design, supervision strategy and training schedule jointly determine performance here.
+
+\subsection{What we learned}
+The loss function mattered more than any single architectural change, which reframed how we prioritized later iterations. A small, informal qualitative review (\secref{subsec:beta-v10}) was a cheap, effective sanity check, and cross-dataset testing (\secref{sec:validation}) was necessary to avoid over-trusting in-distribution numbers. Working under a hard hardware constraint (one T4 GPU) forced choices such as backbone freezing, mixed precision and batch size, which materially affected the very comparison we set out to make.
+
+\subsection{Limitations and future work}
+The results in \secref{sec:testing} are preliminary and both models should be retrained to convergence before drawing firm conclusions on v1.1 vs.\ v2.0. Natural next steps: unfreezing more Transformer stages or sweeping the differential learning rate; adding data augmentation and input normalization (currently absent, \secref{subsec:training11}); extending evaluation with location-based metrics (AUC, NSS) alongside KLD/CC/SIM; and producing the qualitative figures and full training curves still placeholders in this draft.

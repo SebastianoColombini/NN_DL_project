@@ -1,0 +1,50 @@
+% !TEX root = ../main.tex
+
+\section{Development Workflow}
+\label{sec:workflow}
+
+This section reconstructs \textit{how} we arrived at the architectures of \secref{sec:model11}--\secref{sec:model20}: several choices there (e.g.\ Adam over Nesterov momentum, or the three-term deep-supervision loss) are the direct consequence of an earlier iteration under-delivering, and are best read in that light. \tab{tab:timeline} summarizes the five iterations.
+
+\subsection{Literature review and initial hypotheses}
+\label{subsec:litreview}
+
+A two-week, team-wide literature review (\secref{sec:related_work}) produced two working hypotheses that shaped every later decision: (i) encoders pretrained for object recognition should transfer well to saliency, even without fine-tuning~\cite{kummerer2016deepgaze}; (ii) attention-based backbones were a promising, not-yet-validated upgrade over convolutional encoders for this task~\cite{lou2022transalnet}, which we deferred to a later iteration (\secref{sec:model20}) rather than testing immediately. We also read work on audio-visual saliency~\cite{zhu2024audio} as a possible future extension, not pursued here.
+
+\subsection{From a literal replica to a working baseline (Beta, v1.0)}
+\label{subsec:beta-v10}
+
+Our first prototype (``Beta'') literally replicated~\cite{wang2018deep}, trained from scratch with a pixel-wise MSE loss. Results were poor: over-smoothed maps with geometric artifacts, which we attribute mainly to training the encoder from scratch rather than from a pretrained classifier; this is an early, practical confirmation of hypothesis (i). This motivated \textbf{v1.0}: Adam replaced Nesterov momentum, batch normalization was added, and the MSE loss was replaced with the deep-supervised KLD+CC+SIM loss of \secref{subsec:loss11}, applied to the fused output and every decoder branch. This single change produced the largest qualitative jump of the whole project. We sanity-checked it with an informal review by seven students outside the team, comparing predicted and ground-truth maps on held-out images; the consensus that v1.0 produced plausible maps gave us confidence to freeze the architecture and loss design.
+
+\subsection{Refining the baseline: v1.1}
+\label{subsec:v11-workflow}
+
+\textbf{v1.1} deliberately left architecture and loss untouched and instead changed the input to the native, rectangular SALICON resolution ($240\times320$) and added early stopping. We expected a clear improvement; gains were only marginal, suggesting the v1.0 loss/optimization changes already captured most of the achievable improvement at this model capacity.
+
+\subsection{A pretrained Transformer encoder: v2.0}
+\label{subsec:v20-workflow}
+
+\textbf{v2.0} tests hypothesis (ii): the convolutional encoder is replaced with a pretrained Swin-Tiny Transformer~\cite{liu2021swin}, while decoders, fusion and loss are kept identical to v1.1 so any difference is attributable to the encoder (\secref{sec:model20}). Our expectations were the highest of the project; after a long run, results were again only marginally different from v1.1 (\secref{sec:testing}), most plausibly due to the conservative differential learning rate and heavy backbone freezing (\secref{sec:conclusions}).
+
+\subsection{Cross-dataset validation and environment}
+\label{subsec:mit-workflow}
+\label{subsec:env}
+
+Since development only ever validated on held-out SALICON data, we built a MIT1003-based~\cite{judd2009learning} test pipeline (\secref{sec:validation}), applied identically to both models, so the comparison in \secref{sec:testing} reflects generalization rather than in-distribution fit. All training ran on a single Colab T4 GPU (\mytexttilde15\,GB VRAM); this budget directly motivated v2.0's backbone freezing and mixed precision. Code and checkpoints were synced via Google Drive, and the project was git-versioned throughout with a dense, exploratory commit history mirroring this iterative process.
+
+\begin{table}[t]
+\centering
+\caption{Timeline of the main development iterations.}
+\label{tab:timeline}
+\begin{tabular}{@{}p{1.3cm}p{0.9cm}p{5cm}@{}}
+\toprule
+\textbf{Date} & \textbf{Stage} & \textbf{Key change} \\
+\midrule
+19 May      & Setup   & Repository and Colab/Drive pipeline. \\
+26--29 May  & Beta    & Literature review; literal replica of~\cite{wang2018deep}, MSE loss, from scratch. \\
+29 May--08 Jun & v1.0 & Adam, batch norm, KLD+CC+SIM deep-supervision loss; informal 7-person review. \\
+02--05 Jul  & v1.1    & Rectangular $240\times320$ input, early stopping. \\
+10 Jul      & v2.0    & Encoder $\rightarrow$ pretrained Swin-Tiny; differential LR, freezing, AMP. \\
+10--11 Jul  & Testing & MIT1003 cross-dataset evaluation. \\
+\bottomrule
+\end{tabular}
+\end{table}

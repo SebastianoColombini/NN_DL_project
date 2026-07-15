@@ -1,0 +1,53 @@
+% !TEX root = ../main.tex
+
+\section{Model v2.0: Swapping in a Pretrained Transformer Encoder}
+\label{sec:model20}
+
+Model v2.0 follows the same pipeline as v1.1 (\fig{fig:pipeline}), using the decoders (\secref{subsec:decoder11}), fusion (\eq{eq:fuse}) and loss (\secref{subsec:loss11}) \textit{unchanged}. This section describes only what differs (the encoder and, consequently, the training configuration), consistent with isolating the effect of the encoder swap (\secref{subsec:v20-workflow}).
+
+\subsection{Encoder}
+\label{subsec:encoder20}
+
+The scratch-trained VGG-style encoder of \secref{subsec:encoder11} is replaced with \texttt{swin\_tiny\_patch4\_window7\_224}, a Swin Transformer~\cite{liu2021swin} pretrained on ImageNet-1k, which merges shifted local-attention windows across four stages into a feature pyramid analogous to the v1.1 encoder's. We tap stages 2--4, giving $F_3, F_4, F_5$ with 192/384/768 channels at strides 8/16/32 (\tab{tab:encoder20}); inputs are resized to $224\times224$, the backbone's pretraining resolution.
+
+\begin{table}[t]
+\centering
+\caption{Encoder configuration (v2.0, Swin-Tiny). $c$: output channels, $s$: stride relative to the input.}
+\label{tab:encoder20}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Stage} & \textbf{Output} & \textbf{Tap} \\
+\midrule
+2 & $c{=}192,\,s{=}8$  & $F_3$ \\
+3 & $c{=}384,\,s{=}16$ & $F_4$ \\
+4 & $c{=}768,\,s{=}32$ & $F_5$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Because $F_5$ now has stride 32 rather than 16 (\tab{tab:encoder}), Decoder$_5$ needs one extra $\times2$ upsampling stage to match v1.1's output resolution; Decoder$_3$/Decoder$_4$ are unaffected. All other decoder, fusion and loss components are identical to \secref{sec:model11}.
+
+\subsection{Transfer learning and training setup}
+\label{subsec:transfer20}
+\label{subsec:training20}
+
+To keep the pretrained representation intact while allowing some task-specific adaptation, the backbone is frozen by default and only its last stage is fine-tuned; the head is trained at a learning rate ten times higher than the unfrozen backbone stage, following standard differential-LR practice for fine-tuning on a much smaller target dataset. This is the most direct consequence of hypothesis (ii) in \secref{subsec:litreview}, left untested until this iteration. Since most of the backbone is frozen, memory pressure on the T4 GPU is dominated by head activations; we exploit this with a substantially larger batch size than v1.1, combined with automatic mixed precision (AMP). \tab{tab:train20} summarizes the configuration; dataset, splits and evaluation protocol are identical to v1.1 (\secref{subsec:training11}).
+
+\begin{table}[t]
+\centering
+\caption{Training configuration, model v2.0. Parameters not listed are identical to \tab{tab:train11}.}
+\label{tab:train20}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Optimizer & Adam (2 param.\ groups) \\
+Head learning rate & $3\times10^{-4}$ \\
+Backbone learning rate & $3\times10^{-5}$ \\
+Backbone freezing & frozen, last stage unfrozen \\
+Batch size & 128 \\
+Input resolution & $224\times224$ \\
+Mixed precision & yes (AMP) \\
+\bottomrule
+\end{tabular}
+\end{table}
