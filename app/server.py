@@ -199,6 +199,15 @@ def create_app(device: str = "auto", weights_dir: str | Path | None = None) -> F
 
     static = paths.static_dir()
 
+    @app.middleware("http")
+    async def revalidate_frontend(request, call_next):
+        response = await call_next(request)
+        # Revalidate the page and its JS/CSS on every load (a cheap 304 via ETag), so browsers
+        # never keep running a stale ES module after the frontend is updated.
+        if request.url.path == "/" or request.url.path.startswith("/static/"):
+            response.headers["Cache-Control"] = "no-cache"
+        return response
+
     @app.get("/", include_in_schema=False)
     def index():
         return FileResponse(static / "index.html")
