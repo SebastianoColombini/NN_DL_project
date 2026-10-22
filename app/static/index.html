@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Visual Saliency Prediction</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0' stop-color='%23ffe24a'/%3E%3Cstop offset='.45' stop-color='%23f2542d'/%3E%3Cstop offset='1' stop-color='%233b2ab8'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%231c1f2b'/%3E%3Ccircle cx='16' cy='16' r='11' fill='url(%23g)'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script type="module" src="/static/app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>Visual Saliency Prediction</h1>
+        <p class="subtitle">NNDL project · MIT1003 / SALICON</p>
+      </div>
+    </div>
+    <span id="device-badge" class="badge" data-state="loading" title="Inference device">
+      <span class="badge-dot" aria-hidden="true"></span><span class="badge-text">Connecting…</span>
+    </span>
+  </header>
+
+  <div id="alerts" class="alerts" aria-live="assertive"></div>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <section class="card" aria-labelledby="input-title">
+        <h2 id="input-title" class="card-title">Images</h2>
+        <label id="dropzone" class="dropzone" for="file-input">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="dropzone-text"><strong>Drop images here</strong> or <span class="link">browse</span></span>
+          <span class="dropzone-hint">JPEG, PNG, WebP, BMP, GIF · up to 20 MB · several at once</span>
+          <input id="file-input" class="visually-hidden" type="file" accept="image/*" multiple>
+        </label>
+
+        <h3 class="section-label" id="samples-label">Samples <span class="muted">· MIT1003, with fixation maps</span></h3>
+        <div id="samples" class="samples" role="list" aria-labelledby="samples-label">
+          <p class="muted small">Loading samples…</p>
+        </div>
+
+        <h3 class="section-label" id="loaded-label">Loaded</h3>
+        <ul id="loaded" class="loaded" aria-labelledby="loaded-label"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="controls-title">
+        <h2 id="controls-title" class="card-title">Display</h2>
+
+        <fieldset class="field">
+          <legend>Model</legend>
+          <div class="segmented" id="model-group">
+            <label><input type="radio" name="model" value="v1.1" checked><span>v1.1</span></label>
+            <label><input type="radio" name="model" value="v2.0"><span>v2.0</span></label>
+            <label><input type="radio" name="model" value="compare"><span>Compare</span></label>
+          </div>
+          <p id="model-note" class="note" hidden></p>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>View</legend>
+          <div class="segmented" id="view-group">
+            <label><input type="radio" name="view" value="overlay" checked><span>Overlay</span></label>
+            <label><input type="radio" name="view" value="map"><span>Map</span></label>
+            <label><input type="radio" name="view" value="side"><span>Side by side</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="cmap">Colormap</label>
+            <div class="select-wrap">
+              <select id="cmap">
+                <option value="jet">jet</option>
+                <option value="inferno">inferno</option>
+                <option value="viridis">viridis</option>
+                <option value="gray">gray</option>
+              </select>
+            </div>
+            <div id="cmap-preview" class="cmap-preview" aria-hidden="true"></div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="opacity">Overlay opacity <output id="opacity-out" for="opacity">50%</output></label>
+            <input id="opacity" type="range" min="0" max="1" step="0.01" value="0.5">
+          </div>
+        </div>
+
+        <label class="switch">
+          <input id="show-gt" type="checkbox" checked>
+          <span class="switch-track" aria-hidden="true"></span>
+          <span>Show ground-truth fixation map</span>
+        </label>
+      </section>
+    </aside>
+
+    <section class="content" aria-label="Results">
+      <div id="results"></div>
+      <section class="card" aria-labelledby="info-title">
+        <h2 id="info-title" class="card-title">Model info</h2>
+        <div id="model-info" class="model-info"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>Runs locally, no data leaves this machine.</span>
+    <span id="versions" class="muted"></span>
+  </footer>
+</body>
+</html>
