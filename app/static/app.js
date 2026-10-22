@@ -15,7 +15,7 @@ const state = {
   mode: 'v1.1',        // model id or 'compare'
   view: 'overlay',     // overlay | map | side
   cmap: 'jet',
-  opacity: 0.5,
+  opacity: 0.7,
   showGt: true,
 };
 
@@ -216,9 +216,9 @@ async function ensureResults(entry) {
 
 // ---------- canvases ----------
 
-function coloredFor(entry, id, gray) {
-  const k = `${id}|${state.cmap}`;
-  if (!entry.colored.has(k)) entry.colored.set(k, colorize(gray, state.cmap));
+function coloredFor(entry, id, gray, weighted = false) {
+  const k = `${id}|${state.cmap}|${weighted ? 'w' : 'o'}`;
+  if (!entry.colored.has(k)) entry.colored.set(k, colorize(gray, state.cmap, weighted));
   return entry.colored.get(k);
 }
 
@@ -426,14 +426,14 @@ function renderResults() {
       h('button', { class: 'btn small ghost', type: 'button', title: 'Download map PNG', 'data-dl': `${id}-map`,
         onclick: () => download(mapCanvas(coloredFor(entry, id, res.gray)), `${base}_${id}_map.png`) }, icon('download'), 'Map'),
       h('button', { class: 'btn small ghost', type: 'button', title: 'Download overlay PNG', 'data-dl': `${id}-overlay`,
-        onclick: async () => download(overlayCanvas(await entry.img, coloredFor(entry, id, res.gray)), `${base}_${id}_overlay.png`) }, icon('download'), 'Overlay'));
+        onclick: async () => download(overlayCanvas(await entry.img, coloredFor(entry, id, res.gray, true)), `${base}_${id}_overlay.png`) }, icon('download'), 'Overlay'));
     const time = `${fmtMs(res.inference_ms)}`;
     if (state.view === 'map' || state.view === 'side') {
       figures.push(figure(label, mapCanvas(colored), { tag: `Map · ${time}`, actions: state.view === 'side' ? null : dl, cls: 'model' }));
     }
     if (state.view === 'overlay' || state.view === 'side') {
       const c = h('canvas', { width: colored.width, height: colored.height, class: 'overlay', 'data-model': id });
-      liveOverlays.push({ canvas: c, colored, entry });
+      liveOverlays.push({ canvas: c, colored: coloredFor(entry, id, res.gray, true), entry });
       figures.push(figure(label, c, { tag: `Overlay · ${time}`, actions: dl, cls: 'model' }));
     }
   }
@@ -442,7 +442,7 @@ function renderResults() {
     const colored = coloredFor(entry, 'gt', entry.gt);
     if (state.view === 'overlay') {
       const c = h('canvas', { width: colored.width, height: colored.height, class: 'overlay', 'data-model': 'gt' });
-      liveOverlays.push({ canvas: c, colored, entry });
+      liveOverlays.push({ canvas: c, colored: coloredFor(entry, 'gt', entry.gt, true), entry });
       figures.push(figure('Ground truth', c, { tag: 'Fixation map', cls: 'gt' }));
     } else {
       figures.push(figure('Ground truth', mapCanvas(colored), { tag: 'Fixation map', cls: 'gt' }));

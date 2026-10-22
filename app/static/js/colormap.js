@@ -47,8 +47,15 @@ export function gradientCss(name) {
   return `linear-gradient(90deg, ${stops.join(', ')})`;
 }
 
-/** gray: {w, h, data: Uint8Array} -> opaque canvas colored with the LUT. */
-export function colorize(gray, name) {
+// Overlay alpha per (stretched) saliency value: low saliency stays transparent so the photo shows through.
+const ALPHA = Uint8ClampedArray.from({ length: 256 }, (_, v) => 255 * Math.min(1, Math.pow(v / 255, 0.8) * 1.6));
+
+/**
+ * gray: {w, h, data: Uint8Array} -> canvas colored with the LUT.
+ * Values are stretched to the map's own maximum (display only). With `weighted`, the alpha
+ * follows the saliency (for overlays); otherwise the canvas is opaque.
+ */
+export function colorize(gray, name, weighted = false) {
   const lut = LUTS[name];
   const canvas = document.createElement('canvas');
   canvas.width = gray.w;
@@ -57,12 +64,16 @@ export function colorize(gray, name) {
   const out = ctx.createImageData(gray.w, gray.h);
   const px = out.data;
   const src = gray.data;
+  let max = 0;
+  for (let i = 0; i < src.length; i++) if (src[i] > max) max = src[i];
+  const scale = max > 0 ? 255 / max : 0;
   for (let i = 0, j = 0; i < src.length; i++, j += 4) {
-    const k = src[i] * 3;
+    const v = Math.round(src[i] * scale);
+    const k = v * 3;
     px[j] = lut[k];
     px[j + 1] = lut[k + 1];
     px[j + 2] = lut[k + 2];
-    px[j + 3] = 255;
+    px[j + 3] = weighted ? ALPHA[v] : 255;
   }
   ctx.putImageData(out, 0, 0);
   return canvas;

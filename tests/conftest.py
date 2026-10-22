@@ -13,7 +13,8 @@ from saliency.weights import load_model, load_original_pth, weights_path  # noqa
 
 torch.set_num_threads(min(4, os.cpu_count() or 1))
 
-PTH_DIR = Path(os.environ.get("SALIENCY_PTH_DIR", "/home/dev/plans/nndl-gui/work/weights"))
+# Original training checkpoints (`<dir>/<version>/*_best.pth`); the tests that need them are skipped otherwise.
+PTH_DIR = Path(os.environ.get("SALIENCY_PTH_DIR", REPO / "checkpoints"))
 WEIGHTS_DIR = REPO / "weights"
 SAMPLES_DIR = REPO / "samples"
 MODEL_IDS = list(REGISTRY)
