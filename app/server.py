@@ -84,7 +84,7 @@ def create_app(device: str = "auto", weights_dir: str | Path | None = None) -> F
 
     predictor = Predictor(device=device, weights_dir=weights_dir)
     lock = threading.Lock()  # one inference at a time keeps memory use predictable
-    app = FastAPI(title="Visual Saliency Prediction", version=APP_VERSION, docs_url="/api/docs", redoc_url=None)
+    app = FastAPI(title="Visual Saliency Prediction", version=APP_VERSION, docs_url=None, redoc_url=None)
 
     def _available(model_id: str) -> bool:
         return predictor.available(model_id)
