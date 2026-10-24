@@ -18,13 +18,18 @@ MIT1003 is never used for training, so the numbers measure generalisation. The t
 very close; the full discussion is in the report,
 [*From a Scratch CNN to a Pretrained Transformer Encoder*](docs/report.pdf).
 
-![The local GUI comparing v1.1 and v2.0 on an MIT1003 sample](docs/img/gui.png)
+![Predictions of v1.1 and v2.0 on three MIT1003 images, next to the human fixation maps](docs/img/examples.jpg)
+
+*Three MIT1003 images: human fixation map and predictions of both models, with the correlation
+coefficient against the fixation map (made with `tools/make_examples.py`).*
 
 ## Try it
 
 A local web app runs both models on your images or on bundled samples, with overlay / map /
 side-by-side views, model comparison, colormaps and CC / KLD / SIM against a fixation map.
 Everything stays on your machine, no GPU needed (about 1 s per image on CPU).
+
+![The local GUI comparing v1.1 and v2.0 on an MIT1003 sample](docs/img/gui.png)
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
@@ -45,7 +50,7 @@ saliency/    model code, weights loading, inference, metrics
 app/         FastAPI server + static frontend (no build step)
 weights/     trained models + MANIFEST.json (sizes, sha256)
 samples/     8 MIT1003 images with fixation maps
-tools/       weight conversion, MIT1003 evaluation
+tools/       weight conversion, MIT1003 evaluation, README figure
 tests/       pytest suite
 docs/        report.pdf, usage.md, gui.md (architecture, standalone roadmap), project-history.md
 ```
