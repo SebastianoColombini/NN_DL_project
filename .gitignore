@@ -1,4 +1,15 @@
+# Python / local environment
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Large or generated files that do not belong in git
+*.pth
+checkpoints/
+eval_out/
+
+# Local folders of the authors (datasets, paper drafts, course template)
 DB/
-NNDL_project_report_template/
 paper/
-Workflow.md
+NNDL_project_report_template/

@@ -1,0 +1,62 @@
+{
+  "files": [
+    {
+      "file": "saliency_v1.1.safetensors",
+      "version": "v1.1",
+      "sha256": "95ce52721864a178a4c6dc34a1f9e81e030115334d4d5ab2375165a5a5a11841",
+      "size_bytes": 30246894,
+      "dtype_policy": "fp16 for float tensors with ndim>=2; fp32 for 1-D tensors and BN running stats; int unchanged",
+      "sources": [
+        {
+          "file": "1.1/encoder_best.pth",
+          "sha256": "1943d15f34bfa43e16eb6d1f52b53bd00c18b35ebd917e8cb7529a93f70ef7fe"
+        },
+        {
+          "file": "1.1/decoder3_best.pth",
+          "sha256": "30385db420d149cd389ce9487a1fa0b3033151b24eb41bb0780e54e7d4be4088"
+        },
+        {
+          "file": "1.1/decoder4_best.pth",
+          "sha256": "968ca7925dc9178162ac2920f4ab63f09eb807a04ac9469f6937d258ebbf1b28"
+        },
+        {
+          "file": "1.1/decoder5_best.pth",
+          "sha256": "86208a6d55c8627f609f41a7271bf2878c98d0cc96d262042583c52b1f7dd656"
+        },
+        {
+          "file": "1.1/final_best.pth",
+          "sha256": "b25b06481a4633b93ba2faeb8a1ad6662d5b604e7663a806095c8b391868a259"
+        }
+      ]
+    },
+    {
+      "file": "saliency_v2.0.safetensors",
+      "version": "v2.0",
+      "sha256": "f98f7ef95f89f741ffe8b8027305547a0a930246474f4531e47a3f38fc331946",
+      "size_bytes": 55962258,
+      "dtype_policy": "fp16 for float tensors with ndim>=2; fp32 for 1-D tensors and BN running stats; int unchanged",
+      "sources": [
+        {
+          "file": "2.0/encoder_best.pth",
+          "sha256": "7b31cd8c4f3ad2df2a9bfe96cb38ead2d03c38b3db1d3111e0c93f0582dfb2a0"
+        },
+        {
+          "file": "2.0/decoder3_best.pth",
+          "sha256": "7f2ce7d027be87c80eb39cbcccfa9aee0a18563f8db545b9a1e8f11d5f03692d"
+        },
+        {
+          "file": "2.0/decoder4_best.pth",
+          "sha256": "cf170a1a7824ef3e3768204dd906abd897f05d62b6d3ed723091b9e7fe35f4a7"
+        },
+        {
+          "file": "2.0/decoder5_best.pth",
+          "sha256": "c9f3eecb30155514d873e7c2e3c9a7037e96714e4fb397dc957dc5f0c65f4d59"
+        },
+        {
+          "file": "2.0/final_best.pth",
+          "sha256": "d0f72eb0d7ce44adc76b09c21131b022353c18c25dc90af206dffe87e451007a"
+        }
+      ]
+    }
+  ]
+}
