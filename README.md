@@ -66,3 +66,9 @@ paper to v2.0 is in [docs/project-history.md](docs/project-history.md).
 - Datasets: SALICON (Jiang et al., CVPR 2015) and MIT1003 (Judd et al., ICCV 2009). The
   sample images in `samples/` come from MIT1003, see [samples/SOURCES.md](samples/SOURCES.md).
 - Base architecture: W. Wang and J. Shen, *Deep Visual Attention Prediction*, IEEE TIP 2018.
+
+## License
+
+The code is released under the [MIT License](LICENSE). The datasets are not: SALICON and
+MIT1003, the sample images in `samples/` and the trained weights derived from them remain
+subject to the terms of their original authors (research and teaching use).
