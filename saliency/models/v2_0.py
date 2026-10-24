@@ -1,6 +1,6 @@
 """v2.0: Swin-Tiny encoder (timm) + 3-branch deep-supervision decoder.
 
-The module classes below are copied from ``v2.0.ipynb``; the only change is
+The module classes below are copied from ``notebooks/v2.0.ipynb``; the only change is
 ``pretrained=False`` in the backbone, since the checkpoint holds the full
 fine-tuned backbone.
 """

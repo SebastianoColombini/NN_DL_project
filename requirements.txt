@@ -1,4 +1,4 @@
-# Saliency GUI. Install torch/torchvision for your hardware first (see README), e.g. CPU only:
+# Saliency GUI. Install torch/torchvision for your hardware first (see docs/usage.md), e.g. CPU only:
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 torch>=2.2
 torchvision>=0.17

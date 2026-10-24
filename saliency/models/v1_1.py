@@ -1,6 +1,6 @@
 """v1.1: VGG-like CNN encoder trained from scratch + 3-branch deep-supervision decoder.
 
-The module classes below are copied verbatim from ``v1.1.ipynb`` so that the
+The module classes below are copied verbatim from ``notebooks/v1.1.ipynb`` so that the
 checkpoint state_dict keys match exactly.
 """
 import torch
